@@ -70,6 +70,30 @@ pytest
 
 The tests focus on the non-OS-specific parts of the system: key normalization, command routing, and keyboard orchestration logic. The actual Win32 injection call is isolated behind `SendInputBackend`.
 
+### Windows live smoke test
+
+For a real end-to-end check on Windows, run the bundled Notepad smoke test:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\windows-sendinput-smoke.ps1
+```
+
+Useful options:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\windows-sendinput-smoke.ps1 `
+  -Text "INPUTCTL_SMOKE_OK" `
+  -KeepFile `
+  -FilePath "$env:TEMP\inputctl-smoke.txt"
+```
+
+What it does:
+
+- creates a temporary text file with baseline content
+- opens the file in Notepad and activates the window
+- uses `inputctl` to move to the end, insert a newline, type text, and save with `Ctrl+S`
+- verifies the saved file contains the expected text
+
 ## Safety / limitations
 
 - Synthetic input may not reach elevated applications if `inputctl` is running at a lower integrity level.
@@ -85,4 +109,3 @@ Planned follow-up work for gamepad support:
 - Introduce a gamepad backend module without changing keyboard command contracts
 - Expand the registry pattern to support controller buttons, axes, and aliases
 - Add Unicode typing support via `KEYEVENTF_UNICODE` where appropriate
-
